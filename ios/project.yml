@@ -61,3 +61,15 @@ targets:
       properties:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
+# One shared scheme so Xcode runs the app (which embeds the widget) instead of
+# auto-creating a widget scheme that fails with "Failed to show Widget".
+schemes:
+  MediaRemote:
+    build:
+      targets:
+        MediaRemote: all
+    run:
+      config: Debug
+    archive:
+      config: Release
