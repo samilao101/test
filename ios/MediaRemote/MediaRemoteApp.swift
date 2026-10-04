@@ -10,19 +10,6 @@ struct MediaRemoteApp: App {
     }
 }
 
-/// Lets Shortcuts, Siri, the Action button and Back Tap toggle playback
-/// without opening the app.
-struct ToggleMediaIntent: AppIntent {
-    static let title: LocalizedStringResource = "Toggle Chrome Playback"
-    static let description = IntentDescription("Pauses or resumes audio and video playing in Chrome on your computer.")
-    static let openAppWhenRun = false
-
-    func perform() async throws -> some IntentResult {
-        try await RelayClient.fromSettings().send(.toggle)
-        return .result()
-    }
-}
-
 struct MediaRemoteShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(

@@ -28,6 +28,12 @@ struct ContentView: View {
 
                 Spacer()
 
+                Toggle("Show in Dynamic Island", isOn: Binding(
+                    get: { model.liveActivityOn },
+                    set: { on in Task { await model.setLiveActivity(on) } }
+                ))
+                .disabled(!model.isConfigured)
+
                 connectionLabel
             }
             .padding()

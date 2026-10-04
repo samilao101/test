@@ -7,6 +7,7 @@ final class RemoteModel {
     private(set) var status: RelayStatus?
     private(set) var error: String?
     private(set) var isSending = false
+    private(set) var liveActivityOn = MediaActivity.isRunning
 
     var isPlaying: Bool { status?.state?.playing ?? false }
     var browserConnected: Bool { (status?.connected ?? 0) > 0 }
@@ -16,8 +17,10 @@ final class RemoteModel {
 
     func refresh() async {
         do {
-            status = try await RelayClient.fromSettings().status()
+            let status = try await RelayClient.fromSettings().status()
+            self.status = status
             error = nil
+            await MediaActivity.update(with: status)
         } catch {
             self.error = error.localizedDescription
         }
@@ -37,9 +40,28 @@ final class RemoteModel {
         }
     }
 
+    func setLiveActivity(_ on: Bool) async {
+        if on {
+            guard MediaActivity.isAllowed else {
+                error = "Turn on Live Activities for Media Remote in the Settings app."
+                return
+            }
+            do {
+                try MediaActivity.start(with: status)
+            } catch {
+                self.error = error.localizedDescription
+            }
+        } else {
+            await MediaActivity.end()
+        }
+        liveActivityOn = MediaActivity.isRunning
+    }
+
     /// Polls while the app is in the foreground; cancelled when the view's task ends.
     func poll() async {
         while !Task.isCancelled {
+            // The system can end the activity (e.g. after 8 hours or a swipe away).
+            liveActivityOn = MediaActivity.isRunning
             await refresh()
             try? await Task.sleep(for: .seconds(3))
         }

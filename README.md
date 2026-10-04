@@ -9,7 +9,7 @@ Pause and resume whatever is playing in Chrome on your computer from your iPhone
 
 - **`extension/`** is a Chrome extension (Manifest V3). It keeps a WebSocket open to the relay. On a command, it pauses every audible `<audio>`/`<video>` in every tab, including iframes and shadow DOM. It remembers what it paused, so "play" resumes only those. Muted background videos are left alone. It reports what's playing back to the relay. Clicking the toolbar icon also toggles playback.
 - **`relay/`** is a Cloudflare Worker with one Durable Object. The extension connects outbound, so nothing on your computer is exposed and no VPN is needed. A shared token protects it.
-- **`ios/`** is a SwiftUI app with a big play/pause button, a live "now playing" list, and a "Chrome connected" indicator. It also includes a **Toggle Chrome Playback** App Intent, which you can use from Shortcuts, Siri, the Action button, or Back Tap without opening the app.
+- **`ios/`** is a SwiftUI app with a big play/pause button, a live "now playing" list, and a "Chrome connected" indicator. Its **Show in Dynamic Island** switch puts a play/pause control in the Dynamic Island and on the Lock Screen (a Live Activity; long-press the pill to reach the button). It also includes a **Toggle Chrome Playback** App Intent, which you can use from Shortcuts, Siri, the Action button, or Back Tap without opening the app.
 
 ## Setup
 
@@ -41,7 +41,7 @@ brew install xcodegen
 cd ios && xcodegen && open MediaRemote.xcodeproj
 ```
 
-Set your signing team and bundle ID, then run it on your phone. Enter the same relay URL and token in Settings.
+Set `BUNDLE_ID_PREFIX` and `DEVELOPMENT_TEAM` at the top of `ios/project.yml` first (they survive re-running `xcodegen`), then run it on your phone. Enter the same relay URL and token in Settings.
 
 To skip typing them into the phone, copy `ios/MediaRemote/Secrets.swift.example` to `Secrets.swift`, fill in your URL and token, and rerun `xcodegen`. That file is gitignored, so the token never gets pushed.
 
