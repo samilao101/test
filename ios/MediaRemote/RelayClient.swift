@@ -45,11 +45,15 @@ struct RelayClient {
     static let urlKey = "relayURL"
 
     /// Builds a client from the saved settings (URL in UserDefaults, token in the Keychain).
+    /// Values from the Settings screen win; otherwise falls back to Secrets.swift.
     static func fromSettings() throws -> RelayClient {
-        guard let url = normalizedURL(UserDefaults.standard.string(forKey: urlKey) ?? "") else {
+        let savedURL = UserDefaults.standard.string(forKey: urlKey) ?? ""
+        guard let url = normalizedURL(savedURL) ?? normalizedURL(Secrets.relayURL) else {
             throw RelayError.missingURL
         }
-        guard let token = Keychain.token, !token.isEmpty else { throw RelayError.missingToken }
+        guard let token = [Keychain.token, Secrets.token].compactMap({ $0 }).first(where: { !$0.isEmpty }) else {
+            throw RelayError.missingToken
+        }
         return RelayClient(baseURL: url, token: token)
     }
 

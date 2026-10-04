@@ -43,6 +43,8 @@ cd ios && xcodegen && open MediaRemote.xcodeproj
 
 Set your signing team and bundle ID, then run it on your phone. Enter the same relay URL and token in Settings.
 
+To skip typing them into the phone, copy `ios/MediaRemote/Secrets.swift.example` to `Secrets.swift`, fill in your URL and token, and rerun `xcodegen`. That file is gitignored, so the token never gets pushed.
+
 Without XcodeGen, create a new iOS App project in Xcode (SwiftUI, iOS 17+) and drag in the files from `ios/MediaRemote/`, replacing the generated `App` and `ContentView` files.
 
 ## Relay API
