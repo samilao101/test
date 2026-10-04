@@ -1,0 +1,15 @@
+name = "media-remote-relay"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[[durable_objects.bindings]]
+name = "RELAY"
+class_name = "MediaRelay"
+
+# SQLite-backed Durable Objects are available on the Workers free plan.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MediaRelay"]
+
+# Set the shared secret with:  npx wrangler secret put AUTH_TOKEN
+# For local dev, put AUTH_TOKEN=... in .dev.vars

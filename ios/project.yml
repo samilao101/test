@@ -1,0 +1,25 @@
+name: MediaRemote
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  MediaRemote:
+    type: application
+    platform: iOS
+    sources: [MediaRemote]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.MediaRemote
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Media Remote
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.0"
+    info:
+      path: MediaRemote/Info.plist
+      properties:
+        UILaunchScreen: {}
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true

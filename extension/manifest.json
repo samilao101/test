@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Media Remote",
+  "version": "0.1.0",
+  "description": "Pause and resume audio and video in every Chrome tab from your phone.",
+  "minimum_chrome_version": "116",
+  "permissions": ["scripting", "tabs", "storage", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": { "default_title": "Media Remote: click to play/pause" },
+  "options_page": "options.html"
+}
