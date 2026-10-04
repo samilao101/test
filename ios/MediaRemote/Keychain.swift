@@ -20,7 +20,9 @@ enum Keychain {
         }
         set {
             SecItemDelete(baseQuery as CFDictionary)
-            guard let newValue, !newValue.isEmpty else { return }
+            guard let newValue = newValue?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !newValue.isEmpty
+            else { return }
             var query = baseQuery
             query[kSecValueData as String] = Data(newValue.utf8)
             query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock

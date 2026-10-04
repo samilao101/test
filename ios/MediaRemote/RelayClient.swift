@@ -21,14 +21,16 @@ enum RelayAction: String {
 }
 
 enum RelayError: LocalizedError {
-    case notConfigured
+    case missingURL
+    case missingToken
     case unauthorized
     case noBrowser
     case server(Int)
 
     var errorDescription: String? {
         switch self {
-        case .notConfigured: "Add your relay URL and token in Settings."
+        case .missingURL: "Add your relay URL in Settings (e.g. https://media-remote-relay.you.workers.dev)."
+        case .missingToken: "Add your token in Settings."
         case .unauthorized: "The relay rejected your token."
         case .noBrowser: "Chrome isn't connected to the relay."
         case .server(let code): "Relay error (HTTP \(code))."
@@ -44,13 +46,21 @@ struct RelayClient {
 
     /// Builds a client from the saved settings (URL in UserDefaults, token in the Keychain).
     static func fromSettings() throws -> RelayClient {
-        guard
-            let raw = UserDefaults.standard.string(forKey: urlKey),
-            let url = URL(string: raw.trimmingCharacters(in: .whitespaces)),
-            url.scheme != nil,
-            let token = Keychain.token, !token.isEmpty
-        else { throw RelayError.notConfigured }
+        guard let url = normalizedURL(UserDefaults.standard.string(forKey: urlKey) ?? "") else {
+            throw RelayError.missingURL
+        }
+        guard let token = Keychain.token, !token.isEmpty else { throw RelayError.missingToken }
         return RelayClient(baseURL: url, token: token)
+    }
+
+    /// Accepts what people actually paste: stray whitespace, no scheme, a trailing slash.
+    static func normalizedURL(_ raw: String) -> URL? {
+        var text = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if text.isEmpty { return nil }
+        if !text.contains("://") { text = "https://" + text }
+        while text.hasSuffix("/") { text.removeLast() }
+        guard let url = URL(string: text), url.host() != nil else { return nil }
+        return url
     }
 
     func status() async throws -> RelayStatus {

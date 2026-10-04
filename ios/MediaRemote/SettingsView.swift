@@ -15,9 +15,15 @@ struct SettingsView: View {
                         .autocorrectionDisabled()
                 } header: {
                     Text("Relay URL")
+                } footer: {
+                    if !relayURL.isEmpty && RelayClient.normalizedURL(relayURL) == nil {
+                        Text("That doesn't look like a valid URL.").foregroundStyle(.red)
+                    }
                 }
                 Section {
                     SecureField("Token", text: $token)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
                 } header: {
                     Text("Token")
                 } footer: {
@@ -28,13 +34,11 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        relayURL = relayURL.trimmingCharacters(in: .whitespaces)
-                        Keychain.token = token.trimmingCharacters(in: .whitespaces)
-                        dismiss()
-                    }
+                    Button("Done") { dismiss() }
                 }
             }
+            // Save as you type, so swiping the sheet away doesn't lose anything.
+            .onChange(of: token) { _, newValue in Keychain.token = newValue }
         }
     }
 }
